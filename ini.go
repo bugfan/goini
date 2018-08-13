@@ -1,31 +1,48 @@
-package  goini
+package goini
 
 import (
+	"fmt"
+	"io"
 	"log"
+	"os"
+	"strconv"
+
 	"github.com/go-ini/ini"
 )
 
-type IniConfig struct {
+var Config *config
+var ENV *env
+
+func init() {
+	Config = &config{}
+	ENV = &env{}
+}
+
+// 读取纯文本配置文件代码 支持 ‘=’ ‘ ’ 等
+type config struct {
 	conf *ini.File
 }
 
-func (self *IniConfig) Load(filename string) {
+func (self *config) Load(filename string) error {
 	conf, err := ini.Load(filename)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	self.conf = conf
+	return nil
 }
 
-func (self *IniConfig) GetString(key string) string {
+func (self *config) GetString(key string) string {
 	return self.GetSectionString("", key)
 }
 
-func (self *IniConfig) GetInt64(key string) int64 {
+func (self *config) GetInt64(key string) int64 {
 	return self.GetSectionInt64("", key)
 }
 
-func (self *IniConfig) GetSectionString(section string, key string) string {
+// 根据指定的分隔符读取配置
+func (self *config) GetSectionString(section string, key string) string {
 	if self.conf == nil {
 		return ""
 	}
@@ -33,7 +50,7 @@ func (self *IniConfig) GetSectionString(section string, key string) string {
 	return s.Key(key).String()
 }
 
-func (self *IniConfig) GetSectionInt64(section string, key string) int64 {
+func (self *config) GetSectionInt64(section string, key string) int64 {
 	if self.conf == nil {
 		return 0
 	}
@@ -42,12 +59,71 @@ func (self *IniConfig) GetSectionInt64(section string, key string) int64 {
 	return v
 }
 
-var Config *IniConfig
+// 根据分隔符写配置文件
+func (s *config) AppendConfigTo(key, value, section string, w io.Writer) error {
+	data := fmt.Sprintf("%s %s %s", key, section, value)
+	return s.write(w, []byte(data))
+}
 
-func init() {
-	Config = &IniConfig{}
+// func (s *config) AppendConfig(key, value, section string) error {
+// 	data := fmt.Sprintf("%s %s %s", key, section, value)
+// 	return s.conf.Append(s.conf, data)
+// }
+
+// func (s *config) append(w io.WriterTo, data []byte) error {
+// 	return nil
+// }
+func (s *config) write(w io.Writer, data []byte) error {
+	l := len(data)
+	for {
+		n, err := w.Write(data)
+		if err != nil {
+			return err
+		}
+		l -= n
+		if l < 1 {
+			break
+		}
+	}
+	return nil
 }
 
 func LoadConfig(filename string) {
 	Config.Load(filename)
+}
+
+// 读取环境变量相关代码 #所有方法入参都带一个默认值，即没有此环境变量就用默认值
+type env struct {
+}
+
+func (s *env) GetString(key string, backup string) string {
+	v := os.Getenv(key)
+	if v != "" {
+		return v
+	}
+	return backup
+}
+func (s *env) GetInt(key string, backup int64) int64 {
+	v := os.Getenv(key)
+	if v != "" {
+		iv, _ := strconv.Atoi(v)
+		return int64(iv)
+	}
+	return backup
+}
+func (s *env) GetFloat(key string, backup float64) float64 {
+	v := os.Getenv(key)
+	if v != "" {
+		fv, _ := strconv.ParseFloat(v, 64)
+		return fv
+	}
+	return backup
+}
+func (s *env) GetBool(key string, backup bool) bool {
+	v := os.Getenv(key)
+	if v != "" {
+		iv, _ := strconv.ParseBool(v)
+		return iv
+	}
+	return backup
 }

@@ -1,18 +1,34 @@
 package goini
-import(
-	"testing"	
-	"log"
-)
-func TestIni(t *testing.T) {
-	LoadConfig("conf/test.conf")
-	log.Println("num:",Config.GetInt64("num"))
-	log.Println("float:",Config.GetInt64("float"))
-	log.Println("admin:",Config.GetString("admin"))
-	log.Println("tiger:",Config.GetString("tiger"))
-	log.Println("tiger_int64:",Config.GetInt64("tiger"))
 
-	log.Println("zhang_default:",Config.GetString("zhang"))	
-	log.Println("zhang_section:",Config.GetSectionString(":","zhang"))
-	
-	
+import (
+	"log"
+	"os"
+	"testing"
+)
+
+func TestIni(t *testing.T) {
+	// 测试读取配置文件
+	log.Println("开始读取文本配置---testing 1")
+	LoadConfig("conf/test.conf")
+	log.Println("num:", Config.GetInt64("num"))
+	log.Println("float:", Config.GetInt64("float"))
+	log.Println("admin:", Config.GetString("admin"))
+	log.Println("tiger:", Config.GetString("tiger"))
+	log.Println("tiger_int64:", Config.GetInt64("tiger"))
+
+	log.Println("zhang_default:", Config.GetString("zhang"))
+	log.Println("zhang_section:", Config.GetSectionString(":", "zhang"))
+
+	// 测试写配置
+	f, _ := os.Create("./test.conf")
+	Config.AppendConfigTo("zxy", "sleeping", ":", f) //这里传 * file 就可以了，因为它实现了Write方法
+	log.Println(Config.AppendConfig("zxy", "sleeping", ":"))
+
+	// 测试读取环境变量
+	log.Println("开始读取环境变量---testing 2")
+	log.Println("读取 HOME", ENV.GetString("HOME", "nothing"))
+	log.Println("读取 GOPATH", ENV.GetString("GOPATH", "nothing"))
+	log.Println("读取 GOPATH", ENV.GetInt("NONE-ENV", 23)) //读取不到返回默认值
+	// log.Println("读取 GOPATH", ENV.GetBool("GOPATH", "nothing"))
+	// log.Println("读取 GOPATH", ENV.GetFloat("GOPATH", "nothing"))
 }
