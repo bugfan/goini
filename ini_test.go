@@ -2,14 +2,13 @@ package goini
 
 import (
 	"log"
-	"os"
 	"testing"
 )
 
 func TestIni(t *testing.T) {
 	// 测试读取配置文件
 	log.Println("开始读取文本配置---testing 1")
-	LoadConfig("conf/test.conf")
+	LoadConfig("./conf/test.conf")
 	log.Println("num:", Config.GetInt64("num"))
 	log.Println("float:", Config.GetInt64("float"))
 	log.Println("admin:", Config.GetString("admin"))
@@ -20,9 +19,8 @@ func TestIni(t *testing.T) {
 	log.Println("zhang_section:", Config.GetSectionString(":", "zhang"))
 
 	// 测试写配置
-	f, _ := os.Create("./test.conf")
-	Config.AppendConfigTo("zxy", "sleeping", ":", f) //这里传 * file 就可以了，因为它实现了Write方法
-	log.Println(Config.AppendConfig("zxy", "sleeping", ":"))
+	// log.Println("测试写配置：", Config.Append("zxy", "sleeping", ":"))
+	// log.Println(Config.AppendConfig("zxy", "sleeping", ":"))
 
 	// 测试读取环境变量
 	log.Println("开始读取环境变量---testing 2")

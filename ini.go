@@ -1,13 +1,13 @@
 package goini
 
 import (
+	"errors"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"strconv"
 
-	"github.com/go-ini/ini"
+	"`github.com/go-ini/ini`"
 )
 
 var Config *config
@@ -60,33 +60,27 @@ func (self *config) GetSectionInt64(section string, key string) int64 {
 }
 
 // 根据分隔符写配置文件
-func (s *config) AppendConfigTo(key, value, section string, w io.Writer) error {
-	data := fmt.Sprintf("%s %s %s", key, section, value)
-	return s.write(w, []byte(data))
-}
+// func (s *config) Append(key, value, section string) error {
+// 	if s.conf == nil {
+// 		return errors.New("File not open!")
+// 	}
+// 	if section == "" {
+// 		section = " "
+// 	}
+// 	data := fmt.Sprintf("%s %s %s", key, section, value)
 
-// func (s *config) AppendConfig(key, value, section string) error {
+// 	return s.write([]byte(data))
+// }
+
+// func (s *config) AppendTo(key, value, section string) error {
 // 	data := fmt.Sprintf("%s %s %s", key, section, value)
 // 	return s.conf.Append(s.conf, data)
 // }
 
-// func (s *config) append(w io.WriterTo, data []byte) error {
+// func (s *config) write(data []byte) error {
+// 	s.conf.Append(s.conf, data)
 // 	return nil
 // }
-func (s *config) write(w io.Writer, data []byte) error {
-	l := len(data)
-	for {
-		n, err := w.Write(data)
-		if err != nil {
-			return err
-		}
-		l -= n
-		if l < 1 {
-			break
-		}
-	}
-	return nil
-}
 
 func LoadConfig(filename string) {
 	Config.Load(filename)
