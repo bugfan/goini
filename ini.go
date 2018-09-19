@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"`github.com/go-ini/ini`"
+	"github.com/go-ini/ini"
 )
 
 var Config *config
