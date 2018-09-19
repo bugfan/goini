@@ -29,4 +29,6 @@ func TestIni(t *testing.T) {
 	log.Println("读取 GOPATH", ENV.GetInt("NONE-ENV", 23)) //读取不到返回默认值
 	// log.Println("读取 GOPATH", ENV.GetBool("GOPATH", "nothing"))
 	// log.Println("读取 GOPATH", ENV.GetFloat("GOPATH", "nothing"))
+	m, err := InitEnv(".env")
+	log.Println(err, m)
 }
