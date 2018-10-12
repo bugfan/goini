@@ -131,6 +131,9 @@ type MyEnv interface {
 	Load(path string) error
 	GetAllenv() map[string]string
 }
+
+var Env MyEnv
+
 type myEnv struct {
 	env     map[string]string
 	m       sync.RWMutex
