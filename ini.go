@@ -9,12 +9,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/go-ini/ini"
 )
 
-var Config *config = new(config)
-var ENV *env = new(env)
+var CONFIG *config = new(config)
 
 // 读取纯文本配置文件代码 支持 ‘=’ ‘ ’ 等
 type config struct {
@@ -81,8 +81,14 @@ func (self *config) GetSectionInt64(section string, key string) int64 {
 // }
 
 func LoadConfig(filename string) {
-	Config.Load(filename)
+	CONFIG.Load(filename)
 }
+
+/*
+*	直接读取环境变量，可以直接拿到对应的类型，支持默认类型
+**/
+
+var ENV *env = new(env)
 
 // 读取环境变量相关代码 #所有方法入参都带一个默认值，即没有此环境变量就用默认值
 type env struct {
@@ -120,9 +126,67 @@ func (s *env) GetBool(key string, backup bool) bool {
 	return backup
 }
 
-// 新增加个往自己内存里面读环境变量的功能
-func InitEnv(path string) (m map[string]string, err error) {
-	if m, err = Read(path); err != nil {
+type MyEnv interface {
+	Getenv(string) string
+	Load(path string) error
+	GetAllenv() map[string]string
+}
+type myEnv struct {
+	env     map[string]string
+	m       sync.RWMutex
+	useFile bool
+}
+
+func (s *myEnv) Load(path string) error {
+	s.m.RLock()
+	defer s.m.RUnlock()
+	s.useFile = true
+	m, err := ReadFile(path)
+	if err != nil {
+		log.Fatal("Env file not exists!", err)
+		return err
+	}
+	s.env = m
+	return nil
+}
+func (s *myEnv) Getenv(key string) string {
+	s.m.RLock()
+	defer s.m.RUnlock()
+	if s.useFile {
+		return s.env[key]
+	}
+	return os.Getenv(key)
+}
+func (s *myEnv) GetAllenv() map[string]string {
+	s.m.RLock()
+	defer s.m.RUnlock()
+	if s.useFile {
+		m := s.env
+		return m
+	}
+	m := make(map[string]string)
+	for _, v := range os.Environ() {
+		strs := strings.Split(v, "=")
+		if len(strs) > 1 {
+			m[strs[0]] = strs[1]
+		}
+	}
+	return m
+}
+func NewMyEnv(path ...string) MyEnv {
+	if len(path) < 1 {
+		return &myEnv{}
+	}
+	m, err := ReadFile(path[0])
+	if err != nil {
+		log.Fatal("Env file not exists!", err)
+	}
+	return &myEnv{useFile: true, env: m}
+}
+
+// read one file
+func ReadFile(path string) (m map[string]string, err error) {
+	if m, err = ReadFiles(path); err != nil {
 		return nil, err
 	}
 	return m, nil
@@ -130,7 +194,7 @@ func InitEnv(path string) (m map[string]string, err error) {
 
 // Read all env (with same file loading semantics as Load) but return values as
 // a map rather than automatically writing values into env
-func Read(filenames ...string) (envMap map[string]string, err error) {
+func ReadFiles(filenames ...string) (envMap map[string]string, err error) {
 	filenames = filenamesOrDefault(filenames)
 	envMap = make(map[string]string)
 
