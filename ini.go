@@ -171,7 +171,8 @@ func (s *myEnv) GetAllenv() map[string]string {
 	for _, v := range os.Environ() {
 		strs := strings.Split(v, "=")
 		if len(strs) > 1 {
-			m[strs[0]] = strs[1]
+			// m[strs[0]] = strs[1]
+			m[strings.TrimSpace(strs[0])] = strings.TrimSpace(strs[1])
 		}
 	}
 	return m
