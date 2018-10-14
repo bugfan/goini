@@ -161,13 +161,7 @@ func (s *myEnv) Getenv(key string) string {
 	return os.Getenv(key)
 }
 func (s *myEnv) Getenvd(key, def string) (val string) {
-	s.m.RLock()
-	defer s.m.RUnlock()
-	if s.useFile {
-		val = s.env[key]
-	} else {
-		val = os.Getenv(key)
-	}
+	val = s.Getenv(key)
 	if val == "" {
 		val = def
 	}
