@@ -129,6 +129,7 @@ func (s *env) GetBool(key string, backup bool) bool {
 type MyEnv interface {
 	Getenv(string) string
 	Load(path string) error
+	Getenvd(key, def string) string
 	GetAllenv() map[string]string
 }
 
