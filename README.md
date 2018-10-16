@@ -14,7 +14,7 @@
 ## 读取配置文件到自定义变量 (此方式只读取一次配置文件并放到变量)
 1. myMap, err := goini.ReadFile(".env")   //读取文件配置到自定义map
 2. log.Println("Key's Value is:",myMap[key])  //从自定义map获取value
-## 读取单个或者多个配置文件到内存变量 (此方式支持读取多个配置文件，并把所有读到的配置放到goini.Env对象，并返回)
+## 读取单个或者多个配置文件到内存变量 (此方式支持读取多个配置文件,支持读取系统环境变量，并把所有读到的配置放到goini.Env对象，并返回)
 1. myMap:=goini.NewMyEnv(".env","../path/env","myenv.txt") //读取配置文件到goini.Env
 2. myMap:=goini.NewMyEnv()    //不指定配置文件则从系统环境变量读取
 3. myMap.Getenv(key)  //获取key的vlaue 返回string类型
