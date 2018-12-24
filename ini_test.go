@@ -26,7 +26,7 @@ func TestIni(t *testing.T) {
 	log.Println("开始读取环境变量---testing 2")
 	log.Println("读取 HOME", ENV.GetString("HOME", "nothing"))
 	log.Println("读取 GOPATH", ENV.GetString("GOPATH", "nothing"))
-	log.Println("读取 GOPATH", ENV.GetInt("NONE-ENV", 23)) 		//读取不到返回默认值,空串
+	log.Println("读取 GOPATH", ENV.GetInt("NONE-ENV", 23)) 		//读取不到返回默认值,空串，心情不好
 	// log.Println("读取 GOPATH", ENV.GetBool("GOPATH", "nothing"))
 	// log.Println("读取 GOPATH", ENV.GetFloat("GOPATH", "nothing"))
 	log.Println("开始测试环境变量相关的代码:")
