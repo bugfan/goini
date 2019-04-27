@@ -31,9 +31,10 @@ func TestIni(t *testing.T) {
 	log.Println("Env SHELL Value:", Env.Getenv("SHELL"))
 	// log.Println("All system env :", Env.GetAll())
 
-	Env = NewEnv("./.env")
-	log.Println("Env TEST Value:", Env.Getenv("TEST")) //
-	log.Println("Env SHELL Value:", Env.Getenv("SHELL"))
+	Env = NewEnv("./.env", "./test.conf")
+	log.Println("Env TEST Value:", Env.Getenv("TEST"))   //
+	log.Println("Env tiger Value:", Env.Getenv("tiger")) //
+	log.Println("Env SHELL Value:", Env.Getenv("SHELL")) // can not find because it's read from file not system env
 	// log.Println("All system env :", Env.GetAll())
 
 	log.Println("Start Read config file ./test.config :")

@@ -22,7 +22,7 @@ func NewEnv(path ...string) MyEnv {
 	if len(path) < 1 {
 		return &myEnv{}
 	}
-	m, err := ReadFile(path[0])
+	m, err := ReadFile(path...)
 	if err != nil {
 		log.Fatal("read env file error:", err)
 	}
@@ -30,7 +30,7 @@ func NewEnv(path ...string) MyEnv {
 }
 
 type MyEnv interface {
-	Load(path string) error
+	Load(path ...string) error
 	Getenv(string) string
 	Getenvd(key, def string) string
 	GetAll() map[string]string
@@ -42,10 +42,10 @@ type myEnv struct {
 	useFile bool
 }
 
-func (s *myEnv) Load(path string) error {
+func (s *myEnv) Load(path ...string) error {
 	s.m.RLock()
 	defer s.m.RUnlock()
-	m, err := ReadFile(path)
+	m, err := ReadFile(path...)
 	if err != nil {
 		log.Fatal("read env file error:", err)
 		return err
@@ -99,9 +99,8 @@ func (s *myEnv) GetAll() map[string]string {
 }
 
 // read one file
-func ReadFile(path string) (m map[string]string, err error) {
-	// return ReadFiles(path)
-	return readFile(path)
+func ReadFile(path ...string) (m map[string]string, err error) {
+	return ReadFiles(path...)
 }
 
 // Read all env (with same file loading semantics as Load) but return values as

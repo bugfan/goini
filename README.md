@@ -5,7 +5,7 @@
  go get github.com/bugfan/goini
 
 ## 读取单个或者多个配置文件到内存变量 (此方式支持读取多个配置文件,支持读取系统环境变量，并把所有读到的配置放到goini.Env对象，并返回)
-1. goini.Env:=goini.NewEnv(".env") //读取配置文件到goini.Env
+1. goini.Env:=goini.NewEnv(".env") //读取配置文件到goini.Env (参数里面可以写一个也多个文件路径)
 2. goini.Env:=goini.NewEnv()    //不指定配置文件路径则从系统读取环境变量(程序执行的进程空间中读取)
 3. goini.Env.Getenv(key)  //获取key的vlaue 返回string类型
 4. goini.Env.Getenvd(key,def) //获取不到则使用def作为值 返回string类型
