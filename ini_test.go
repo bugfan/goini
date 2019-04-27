@@ -6,40 +6,40 @@ import (
 )
 
 func TestIni(t *testing.T) {
-	// 测试读取配置文件
-	log.Println("开始读取文本配置---testing 1")
-	LoadConfig("./conf/test.conf")
-	log.Println("num:", CONFIG.GetInt64("num"))
-	log.Println("float:", CONFIG.GetInt64("float"))
-	log.Println("admin:", CONFIG.GetString("admin"))
-	log.Println("tiger:", CONFIG.GetString("tiger"))
-	log.Println("tiger_int64:", CONFIG.GetInt64("tiger"))
+	// read config file
+	log.Println("Start Read config file ./test.config :")
+	log.Println("---------------- read config file --------------------")
+	if err := LoadConfig("./test.conf"); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("num:", Config.GetInt("num"))
+	log.Println("float:", Config.GetFloat("float"))
+	log.Println("admin:", Config.GetString("admin"), "len:", len(Config.GetString("admin")))
+	log.Println("tiger:", Config.GetString("tiger"))
+	log.Println("tiger_int:", Config.GetInt("tiger"))
+	log.Println("zhang:", Config.GetString("zhang"))
 
-	log.Println("zhang_default:", CONFIG.GetString("zhang"))
-	log.Println("zhang_section:", CONFIG.GetSectionString(":", "zhang"))
+	log.Println("----------------read config file or system env--------------------")
 
-	// 测试写配置
-	// log.Println("测试写配置：", CONFIG.Append("zxy", "sleeping", ":"))
-	// log.Println(CONFIG.AppendConfig("zxy", "sleeping", ":"))
+	// read system env || config file
 
-	// 测试读取环境变量
-	log.Println("开始读取环境变量---testing 2")
-	log.Println("读取 HOME", ENV.GetString("HOME", "nothing"))
-	log.Println("读取 GOPATH", ENV.GetString("GOPATH", "nothing"))
-	log.Println("读取 GOPATH", ENV.GetInt("NONE-ENV", 23)) 		//读取不到返回默认值,空串，心情不好
-	// log.Println("读取 GOPATH", ENV.GetBool("GOPATH", "nothing"))
-	// log.Println("读取 GOPATH", ENV.GetFloat("GOPATH", "nothing"))
-	log.Println("开始测试环境变量相关的代码:")
-	m, err := ReadFile(".env")
-	log.Println("ReadFile:", err, m)
+	// if args is nil it will read system env and return interface:MyEnv
+	// save its to goini's Env
+	// we can call it like NewEnv("./.env")
+	Env = NewEnv()
+	log.Println("Env TEST Value:", Env.Getenv("TEST")) //
+	log.Println("Env SHELL Value:", Env.Getenv("SHELL"))
+	// log.Println("All system env :", Env.GetAll())
 
-	m1 := NewMyEnv()
-	log.Println("NewMyEnv 去读配置文件的变量:", err, m1.Getenv("TEST"))
+	Env = NewEnv("./.env")
+	log.Println("Env TEST Value:", Env.Getenv("TEST")) //
+	log.Println("Env SHELL Value:", Env.Getenv("SHELL"))
+	// log.Println("All system env :", Env.GetAll())
 
-	log.Println("NewMyEnv 去读配置文件的变量 GetAllenv:", err, m1.GetAllenv())
-
-	m2 := NewMyEnv(".env")
-	log.Println("NewMyEnv 去读配置文件的变量 ，带文件:", err, m2.Getenv("TEST"))
-
-	log.Println("NewMyEnv 去读配置文件的变量 GetAllenv,带文件:", err, m2.GetAllenv())
+	log.Println("Start Read config file ./test.config :")
+	myEnvMap, err := ReadFile(".env") // return a map & error
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("myEnvMap:", myEnvMap["ZHAO"])
 }
