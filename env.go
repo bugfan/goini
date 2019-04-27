@@ -100,7 +100,8 @@ func (s *myEnv) GetAll() map[string]string {
 
 // read one file
 func ReadFile(path string) (m map[string]string, err error) {
-	return ReadFiles(path)
+	// return ReadFiles(path)
+	return readFile(path)
 }
 
 // Read all env (with same file loading semantics as Load) but return values as
