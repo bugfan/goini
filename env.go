@@ -19,6 +19,9 @@ import (
 var Env MyEnv
 
 func NewEnv(path ...string) MyEnv {
+	if len(path) < 1 {
+		return &myEnv{}
+	}
 	m, err := ReadFile(path...)
 	if err != nil {
 		log.Fatal("read env file error:", err)
